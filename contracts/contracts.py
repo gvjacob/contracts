@@ -1,57 +1,14 @@
+"""
+Contracts are agreements between a function and its users. They ensure
+that the data flow is consistent and correct among components.
+
+Input and output contracts ensure that the data piped in and out
+respectively are well-formed.
+"""
 import inspect
+
 from functools import wraps
-
-class InputContractException(Exception):
-    """
-    Exception raised when the input contract is broken.
-    """
-
-    def __init__(self, errors):
-        """
-        Initialize the exception.
-
-        :param errors: dict, dictionary from param name to argument
-        """
-        super(InputContractException, self).__init__(self.message(errors))
-
-
-    def message(self, errors):
-        """
-        Formalize the contract error message from the given errors.
-
-        :param errors: dict, param name to argument
-        :return: string, error message
-        """
-        error_message = "\nArguments that failed the contracts"
-        for key, value in errors.items():
-            error_message += f"\n{key}: {str(value)}"
-        return error_message
-
-
-
-class OutputContractException(Exception):
-    """
-    Exception raised when the output contract is broken.
-    """
-
-    def __init__(self, output):
-        """
-        Initialize the exception.
-
-        :param output: any, the output of the function
-        """
-        super(OutputContractException, self).__init__(self.message(output))
-
-
-    def message(self, output):
-        """
-        Formalize the contract error message from the given errors.
-
-        :param output: any, the output of the function
-        :return: string, error message
-        """
-        return f"The result of {str(output)} broke the output contract"
-
+from contracts.exceptions import InputContractException, OutputContractException
 
 
 def input_contract(**checks):
