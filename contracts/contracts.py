@@ -22,7 +22,7 @@ def input_contract(**checks):
     def decorator(func):
         @wraps(func)
         def decorated(*args, **kwargs):
-            func_params = inspect.getargspec(func).args
+            func_params = inspect.getfullargspec(func).args
             params_args = dict(zip(func_params, args))
             params_args.update(kwargs)
             error_params_args = {}
