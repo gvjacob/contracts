@@ -1,13 +1,14 @@
 # **Contracts for Python Functions**
 
-Contracts can be used to validate the input or output of a function. Data flow among components can be hard to keep track or maintained, and contracts solve this by intercepting data that is piped into or out of a function and checking if they satisfy the specified requirements.
+Contracts can be used to validate the input or output of a function. Data flow among components can be hard to keep track or maintained, sometimes forcing us to write print statements everywhere trying to catch malformed data. This contracts library solves this by intercepting data that is piped into or out of a function and checking if they satisfy the specified requirements.
+
 
 ## **Getting Started**
 
 Install contracts through pip.
 
 ```console
-$ pip install contracts
+$ pip3 install contracts
 ```
 
 Once contracts is installed, you can import the input and output contract decorators, and other convenient qualifier functions.
@@ -28,7 +29,7 @@ Input contract is a function decorater that takes in kwargs as a mapping of para
 
 Output contract is another decorator that takes in a single qualifier and checks the result of calling the decorated function.
 
-### **Using Input contract**
+### **Using Input Contract**
 ```py
 from contracts import ic, natural
 
@@ -46,7 +47,7 @@ Arguments that failed the contracts
 val: -1
 ```
 
-### **Using Output contract**
+### **Using Output Contract**
 ```py
 from contracts import oc, natural
 
@@ -76,18 +77,30 @@ Qualifiers are functions that take in a single value and return `True` if condit
 
 For convenience, the contracts library provides a range of basic qualifiers on some data types.
 
+* Numbers: number, positive_number, negative_number
+* Integers: integer, natural, positive_integer, negative_integer
+* Floats: floating_point, positive_float, negative_float
 
-## **Tests**
+### **Composing Multiple Qualifiers**
 
-Run the tests with this command:
+To compose multiple qualifiers, you can import the *compose* function and pass as many qualifiers as needed to make a single qualifier.
 
-```console
-$ ./testme
+```py
+from contracts import natural, positive_integer, compose
+
+@ic(val = compose(natural, positive_integer))
+def func(val):
+    return val
 ```
+
+The input contract above will check that the argument for "val" is a natural number and a positive integer.
+
+### **Custom Qualifiers**
+Users of the library can plug in their own qualifiers as long as they adhere to the right data signature. If you're using this library throughout your code base, writing your collection of qualifiers in a separate file will keep things clean.
 
 
 ## **Built With**
-Contracts library is built with Python 3.6. Code has been tested only in this version. Compatibility with other versions is unpredictable.
+Contracts library is built with Python 3.6. Code has been tested only in this version. Compatibility with other versions has not been tested.
 
 Libraries used:
 * [inspect](https://docs.python.org/3.6/library/inspect.html)
@@ -97,6 +110,8 @@ Libraries used:
 
 ## Author
 Gino Jacob - [Github](https://github.com/gvjacob)
+
+Feedback is very much welcomed. Please write issues.
 
 
 ## License
