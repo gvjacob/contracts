@@ -1,5 +1,5 @@
 """
-Contracts are agreements between a function and its users. They ensure
+Contracts are agreements between a function and its clients. They ensure
 that the data flow is consistent and correct among components.
 
 Input and output contracts ensure that the data piped in and out
