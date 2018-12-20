@@ -29,7 +29,7 @@ Input contract is a function decorater that takes in kwargs as a mapping of para
 
 Output contract is another decorator that takes in a single qualifier and checks the result of calling the decorated function.
 
-### **Using Input Contract**
+#### **Using Input Contract**
 ```py
 from contracts import ic, natural
 
@@ -47,7 +47,7 @@ Arguments that failed the contracts
 val: -1
 ```
 
-### **Using Output Contract**
+#### **Using Output Contract**
 ```py
 from contracts import oc, natural
 
@@ -81,7 +81,7 @@ For convenience, the contracts library provides a range of basic qualifiers on s
 * Integers: integer, natural, positive_integer, negative_integer
 * Floats: floating_point, positive_float, negative_float
 
-### **Composing Multiple Qualifiers**
+#### **Composing Multiple Qualifiers**
 
 To compose multiple qualifiers, you can import the *compose* function and pass as many qualifiers as needed to make a single qualifier.
 
@@ -95,7 +95,7 @@ def func(val):
 
 The input contract above will check that the argument for "val" is a natural number and a positive integer.
 
-### **Custom Qualifiers**
+#### **Custom Qualifiers**
 Users of the library can plug in their own qualifiers as long as they adhere to the right data signature. If you're using this library throughout your code base, writing your collection of qualifiers in a separate file will keep things clean.
 
 
