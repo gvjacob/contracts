@@ -8,7 +8,7 @@ Contracts can be used to validate the input or output of a function. Data flow a
 Install contracts through pip.
 
 ```console
-$ pip3 install contracts
+$ pip3 install python-contracts
 ```
 
 Once contracts is installed, you can import the input and output contract decorators, and other convenient qualifier functions.

@@ -4,14 +4,14 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="contracts",
-    version="0.0.1",
+    name="python-contracts",
+    version="0.1.1",
     author="Gino Jacob",
     author_email="gvjacob@outlook.com",
-    description="Function input and output contracts for Python 3",
+    description="Function contracts for Python",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/gvjacob/contracts",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

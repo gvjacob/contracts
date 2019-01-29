@@ -1,7 +1,7 @@
 # Tests for qualifiers
 import pytest
 
-from qualifiers import *
+from contracts.qualifiers import *
 
 def suite_runner(qualifier, trues, falses):
     """
