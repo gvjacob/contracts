@@ -11,41 +11,6 @@ from functools import wraps
 from contracts.exceptions import InputContractException, OutputContractException
 
 
-def zip_params_args(func, args, kwargs):
-    """
-    Zip the parameter names of function with its arguments. 
-
-    :param func: (...) -> any, given function
-    :param args: [any, ...], list of arguments
-    :param kwargs: dict, additional key word arguments
-    :return: dict, parameters to arguments
-    """
-    func_params = inspect.getfullargspec(func).args
-    params_args = dict(zip(func_params, args))
-    params_args.update(kwargs)
-    return params_args
-
-
-def get_violating_args(contracts, params_args):
-    """
-    Get all arguments that violate the contracts.
-
-    :param contracts: dict, contracts from parameters to qualifiers
-    :param params_args: dict, parameters to arguments
-    :return: dict, parameters to contract violating arguments
-    """
-    error_params_args = {}
-    for param, contract in contracts.items():
-        arg = params_args[param]
-        try:
-            if not contract(arg):
-                error_params_args[param] = arg
-        except:
-            error_params_args[param] = arg
-
-    return error_params_args
-
-
 def input_contract(**contracts):
     """
     Input contract decorator.
@@ -62,29 +27,68 @@ def input_contract(**contracts):
             
             if len(error_params_args) is not 0:
                 raise InputContractException(error_params_args)
-
             return func(*args, **kwargs)
 
         return decorated
     return decorator
 
 
-
-def output_contract(check):
+def output_contract(contract):
     """
-    Output contract decorator.
+    Output contract decorator; check if calling 
+    function with given arguments yield valid result.
 
-    :param check: (any) -> bool, output checker
-    :return: func, decorator function
+    :param contract: (T) -> bool, output qualifier
+    :return: decorator function
     """
-
     def decorator(func):
         @wraps(func)
         def decorated(*args, **kwargs):
             result = func(*args, **kwargs)
-            if not check(result):
+            if not contract(result):
                 raise OutputContractException(result)
             return result
 
         return decorated
     return decorator
+
+
+def zip_params_args(func, args, kwargs = {}):
+    """
+    Zip the parameter names of function with its arguments. 
+
+    :param func: (...) -> any, given function
+    :param args: [any, ...], list of arguments
+    :param kwargs: { string: any, ... }, additional key word arguments
+    :return: { string: any, ... }, parameters to arguments
+    """
+    func_params = inspect.signature(func).parameters
+    params_args = dict(zip(func_params, args))
+    params_args.update(kwargs)
+    return params_args
+
+
+def get_violating_args(contracts, params_args):
+    """
+    Get all arguments that violate the contracts.
+
+    :param contracts: { string: (any) -> bool, ... }, contracts from parameters to qualifiers
+    :param params_args: { string: any, ... }, parameters to arguments
+    :return: { string: any, ... }, parameters to contract violating arguments
+    """
+    error_params_args = {}
+    for param, arg in params_args.items():
+        # No contract for parameter
+        if param not in contracts:
+            continue
+
+        # Checking breaks
+        try: 
+            valid = contracts[param](arg)
+        except:
+            error_params_args[param] = arg
+
+        # Violate contract
+        if not valid:
+            error_params_args[param] = arg
+    return error_params_args

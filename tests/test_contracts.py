@@ -5,6 +5,7 @@ import inspect
 from contracts import ic, oc, InputContractException, OutputContractException
 from contracts import natural, compose, positive, positive_integer
 
+
 @ic(val=natural)
 def ic_echo(val):
     """ic echo"""
@@ -75,6 +76,8 @@ def test_correct_ic_oc_echo():
 
 def test_violating_ic_oc_echo():
     with pytest.raises(InputContractException) as e:
+        ic_oc_echo(-1)
+    with pytest.raises(OutputContractException) as e:
         ic_oc_echo(0)
 
 
