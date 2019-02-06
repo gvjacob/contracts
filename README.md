@@ -60,17 +60,6 @@ def func(val):
 contracts.exceptions.OutputContractException: The result of -1 broke the output contract
 ```
 
-**Note:** To use both *ic* and *oc*, oc needs to be placed above ic as such:
-
-```py
-@oc(natural)
-@ic(val = natural)
-def func(val):
-    return val
-```
-
-Otherwise, your code will break. This is definitely something to improve on.
-
 
 ## **Qualifiers**
 Qualifiers are functions that take in a single value and return `True` if conditions are satisfied, and `False` otherwise.

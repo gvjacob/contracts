@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="python-contracts",
-    version="0.1.1",
+    version="0.1.2",
     author="Gino Jacob",
     author_email="gvjacob@outlook.com",
     description="Function contracts for Python",
