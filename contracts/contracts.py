@@ -5,9 +5,10 @@ that the data flow is consistent and correct among components.
 Input and output contracts ensure that the data piped in and out
 respectively are well-formed.
 """
-import inspect
 
+import inspect
 from functools import wraps
+
 from contracts.exceptions import InputContractException, OutputContractException
 
 
@@ -87,6 +88,7 @@ def get_violating_args(contracts, params_args):
             valid = contracts[param](arg)
         except:
             error_params_args[param] = arg
+            continue
 
         # Violate contract
         if not valid:

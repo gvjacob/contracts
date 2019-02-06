@@ -5,136 +5,134 @@ import inspect
 from contracts import ic, oc, InputContractException, OutputContractException
 from contracts import natural, compose, positive, positive_integer
 
+class TestInputContract:
 
-@ic(val=natural)
-def ic_echo(val):
-    """ic echo"""
-    return val
+    @ic(val = positive)
+    def echo_ic(self, val):
+        """ echo_ic """
+        return val
 
+    @ic(missing_val = positive)
+    def echo_ic_with_unmatched_keys(self, val):
+        return val
 
-def test_correct_ic_echo():
-    assert ic_echo(3) == 3
+    @ic()
+    def echo_ic_without_keys(self, val):
+        return val
 
+    @ic(val_one = positive, val_two = natural)
+    def echo_ic_two_vals(self, val_one, val_two):
+        return val_one, val_two
 
-def test_violating_ic_echo():
-    with pytest.raises(InputContractException) as e:
-        ic_echo(-1)
+    def test_return_val(self):
+        assert self.echo_ic(1) == 1
 
-def test_ic_echo_wraps_decorated_func():
-    func_params = list(inspect.signature(ic_echo).parameters)
-    assert func_params == ['val']
-    assert ic_echo.__name__ == "ic_echo"
-    assert ic_echo.__doc__ == "ic echo"
+    def test_return_val_with_unmatched_keys(self):
+        assert self.echo_ic_with_unmatched_keys(1) == 1
 
+    def test_return_val_without_keys(self):
+        assert self.echo_ic_without_keys(1) == 1
 
-@oc(natural)
-def oc_echo(val):
-    """oc echo"""
-    return val
+    def test_violate_ic(self):
+        with pytest.raises(InputContractException) as e:
+            self.echo_ic(0)
+    
+    def test_echo_ic_two_vals_return_vals(self):
+        assert self.echo_ic_two_vals(1, 2) == (1, 2)
 
+    def test_echo_ic_two_vals_violate_ic(self):
+        with pytest.raises(InputContractException) as e:
+            self.echo_ic_two_vals(1, -2)
 
-def test_correct_oc_echo():
-    assert oc_echo(3) == 3
+        with pytest.raises(InputContractException) as e:
+            self.echo_ic_two_vals(-2, 1)
 
+        with pytest.raises(InputContractException) as e:
+            self.echo_ic_two_vals(-2, -2)
 
-def test_violating_oc_echo():
-    with pytest.raises(OutputContractException) as e:
-        oc_echo(-1)
-
-
-def test_oc_echo_wraps_decorated_func():
-    func_params = list(inspect.signature(oc_echo).parameters)
-    assert func_params == ['val']
-    assert oc_echo.__name__ == "oc_echo"
-    assert oc_echo.__doc__ == "oc echo"
-
-
-@oc(positive_integer)
-@ic(val=natural)
-def oc_ic_echo(val):
-    return val
-
-
-def test_correct_oc_ic_echo():
-    assert oc_ic_echo(3) == 3
+    def test_wrap_decorated_func(self):
+        func_params = list(inspect.signature(self.echo_ic).parameters)
+        assert func_params == ['val']
+        assert self.echo_ic.__name__ == "echo_ic"
+        assert self.echo_ic.__doc__ == " echo_ic "
 
 
-def test_violating_oc_ic_echo():
-    with pytest.raises(OutputContractException) as e:
-        oc_ic_echo(0)
+class TestOutputContract:
+
+    @oc(positive)
+    def echo_oc(self, val):
+        """ echo_oc """
+        return val
+
+    def test_return_val(self):
+        assert self.echo_oc(1) == 1
+
+    def test_violate_oc(self):
+        with pytest.raises(OutputContractException) as e:
+            self.echo_oc(0)
+
+    def test_wrap_decorated_func(self):
+        func_params = list(inspect.signature(self.echo_oc).parameters)
+        assert func_params == ['val']
+        assert self.echo_oc.__name__ == "echo_oc"
+        assert self.echo_oc.__doc__ == " echo_oc "
 
 
-@ic(val=natural)
-@oc(positive_integer)
-def ic_oc_echo(val):
-    return val
+class TestInputOutputContracts:
+
+    @ic(val = positive)
+    @oc(positive_integer)
+    def echo_ic_oc(self, val):
+        """ echo_ic_oc """
+        return val
+
+    def test_return_val(self):
+        assert self.echo_ic_oc(1) == 1
+
+    def test_violate_ic(self):
+        with pytest.raises(InputContractException) as e:
+            self.echo_ic_oc(0)
+    
+    def test_violate_oc(self):
+        with pytest.raises(OutputContractException) as e:
+            self.echo_ic_oc(1.5)
+
+    def test_violate_ic_oc(self):
+        with pytest.raises(InputContractException) as e:
+            self.echo_ic_oc(0)
+
+    def test_wrap_decorated_func(self):
+        func_params = list(inspect.signature(self.echo_ic_oc).parameters)
+        assert func_params == ['val']
+        assert self.echo_ic_oc.__name__ == "echo_ic_oc"
+        assert self.echo_ic_oc.__doc__ == " echo_ic_oc "
 
 
-def test_correct_ic_oc_echo():
-    assert ic_oc_echo(3) == 3
+class TestOutputInputContracts:
 
+    @oc(positive_integer)
+    @ic(val = positive)
+    def echo_oc_ic(self, val):
+        """ echo_oc_ic """
+        return val
 
-def test_violating_ic_oc_echo():
-    with pytest.raises(InputContractException) as e:
-        ic_oc_echo(-1)
-    with pytest.raises(OutputContractException) as e:
-        ic_oc_echo(0)
+    def test_return_val(self):
+        assert self.echo_oc_ic(1) == 1
 
+    def test_violate_ic(self):
+        with pytest.raises(InputContractException) as e:
+            self.echo_oc_ic(0)
+    
+    def test_violate_oc(self):
+        with pytest.raises(OutputContractException) as e:
+            self.echo_oc_ic(1.5)
 
-@ic(val=compose(natural, positive))
-def composed_ic_echo(val):
-    return val
+    def test_violate_oc_ic(self):
+        with pytest.raises(InputContractException) as e:
+            self.echo_oc_ic(0)
 
-
-def test_correct_composed_ic_echo():
-    assert composed_ic_echo(3) == 3
-
-
-def test_incorrect_composed_ic_echo():
-    with pytest.raises(InputContractException) as e:
-        composed_ic_echo(0)
-
-    with pytest.raises(InputContractException) as e:
-        composed_ic_echo(0.2)      
-
-    with pytest.raises(InputContractException) as e:
-        composed_ic_echo(-1)
-
-
-@oc(compose(natural, positive))
-def composed_oc_echo(val):
-    return val
-
-def test_correct_composed_oc_echo():
-    assert composed_oc_echo(3) == 3
-
-def test_incorrect_composed_oc_echo():
-    with pytest.raises(OutputContractException) as e:
-        composed_oc_echo(0)
-
-    with pytest.raises(OutputContractException) as e:
-        composed_oc_echo(0.2)      
-
-    with pytest.raises(OutputContractException) as e:
-        composed_oc_echo(-1)
-
-
-@ic(val1=natural, val2=positive_integer)
-def ic_echo_two_vals(val1, val2):
-    return (val1, val2)
-
-
-def test_correct_ic_echo_two_vals():
-    assert ic_echo_two_vals(0, 2) == (0, 2)
-
-def test_incorrect_ic_echo_two_vals():
-    with pytest.raises(InputContractException) as e:
-        ic_echo_two_vals(0.2, -1)
-
-    with pytest.raises(InputContractException) as e:
-        ic_echo_two_vals(0, -1)
-
-    with pytest.raises(InputContractException) as e:
-        ic_echo_two_vals(-1, 2)
-
-
+    def test_wrap_decorated_func(self):
+        func_params = list(inspect.signature(self.echo_oc_ic).parameters)
+        assert func_params == ['val']
+        assert self.echo_oc_ic.__name__ == "echo_oc_ic"
+        assert self.echo_oc_ic.__doc__ == " echo_oc_ic "
