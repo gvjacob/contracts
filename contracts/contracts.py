@@ -27,7 +27,7 @@ def input_contract(**contracts):
             error_params_args = get_violating_args(contracts, params_args)
             
             if len(error_params_args) is not 0:
-                raise InputContractException(error_params_args)
+                raise InputContractException(error_params_args, contracts)
             return func(*args, **kwargs)
 
         return decorated
@@ -47,7 +47,7 @@ def output_contract(contract):
         def decorated(*args, **kwargs):
             result = func(*args, **kwargs)
             if not contract(result):
-                raise OutputContractException(result)
+                raise OutputContractException(result, contract)
             return result
 
         return decorated
